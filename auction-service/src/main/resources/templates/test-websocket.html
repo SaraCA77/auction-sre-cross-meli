@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test WebSocket Auction</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+</head>
+<body>
+<h2>Simulador de pujas</h2>
+<button onclick="startBids()">Iniciar simulación variada</button>
+<pre id="output"></pre>
+
+<script>
+    let stompClient = null;
+
+    function connect(callback) {
+        const socket = new SockJS('http://localhost:8080/ws-auctions');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            document.getElementById("output").textContent += "Conectado!\n";
+
+            stompClient.subscribe('/topic/updates', function (message) {
+                const content = JSON.parse(message.body);
+                console.log("Update: ", content);
+                document.getElementById("output").textContent += "Update recibido: " + JSON.stringify(content) + "\n";
+            });
+
+            if (callback) callback();
+        });
+    }
+
+    function startBids() {
+        if (!stompClient || !stompClient.connected) {
+            connect(() => sendBids());
+        } else {
+            sendBids();
+        }
+    }
+
+    function sendBids() {
+        for (let i = 0; i < 1000000; i++) {
+            let amount;
+            if (i % 3 === 0) {
+                // Pujas menores
+                amount = 490;
+            } else if (i % 3 === 1) {
+                // Pujas iguales
+                amount = 500;
+            } else {
+                // Pujas mayores
+                amount = 500 + i * 0.5;
+            }
+
+            stompClient.send("/app/bid", {}, JSON.stringify({
+                auctionId: 1,
+                amount: amount,
+                bidderName: "Bidder_" + i
+            }));
+        }
+
+        document.getElementById("output").textContent += "Enviadas 100 pujas variadas!\n";
+    }
+</script>
+</body>
+</html>
