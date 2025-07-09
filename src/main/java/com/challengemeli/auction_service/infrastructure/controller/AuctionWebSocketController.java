@@ -6,14 +6,17 @@ import com.challengemeli.auction_service.infrastructure.dto.BidMessage;
 import com.challengemeli.auction_service.infrastructure.dto.AuctionResponseDto;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 
+@Slf4j
 @Controller
-
 public class AuctionWebSocketController {
 
     private final AuctionUseCase auctionUseCase;
@@ -38,6 +41,14 @@ public class AuctionWebSocketController {
         Auction auction = timer.record(() ->
                 auctionUseCase.placeBid(bidMessage.getAuctionId(), bidMessage.toBid())
         );
+        assert auction != null;
         return new AuctionResponseDto(auction);
+    }
+
+    @MessageExceptionHandler
+    @SendToUser("/queue/errors")
+    public String handleWebSocketExceptions(Exception ex) {
+        log.warn("WebSocket error: {}", ex.getMessage());
+        return ex.getMessage();
     }
 }
