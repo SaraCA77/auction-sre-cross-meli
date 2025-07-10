@@ -41,7 +41,8 @@
     }
 
     function sendBids() {
-        for (let i = 0; i < 1000; i++) {
+        let numberBid = 1000;
+        for (let i = 0; i < numberBid; i++) {
             let amount;
             if (i % 3 === 0) {
                 // Pujas menores
@@ -61,7 +62,8 @@
             }));
         }
 
-        document.getElementById("output").textContent += "Enviadas 100 pujas variadas!\n";
+        document.getElementById("output").textContent += `Enviadas ${numberBid} pujas variadas!
+`;
     }
 </script>
 </body>

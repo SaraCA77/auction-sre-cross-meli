@@ -77,6 +77,11 @@ This project simulates an auction platform with:
 - `POST /auctions/{id}/reactivate` — Reactivate a suspended auction
 - `GET /auctions/{id}` — Get auction details by ID
 
+### Bidding Simulator
+```
+src/main/resources/templates/test-websocket.html
+```
+
 ## 🇪🇸 README en Español
 
 ### ✅ Requisitos
@@ -154,6 +159,10 @@ Simula una plataforma de subastas con:
 - `POST /auctions/{id}/reactivate` — Reactivar
 - `GET /auctions/{id}` — Detalle
 
+### Simulador de Pujas
+```
+src/main/resources/templates/test-websocket.html
+```
 ---
 
 Enjoy bidding! 🚀🏆
